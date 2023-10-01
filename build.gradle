@@ -1,0 +1,60 @@
+plugins {
+    id "java"
+    id "io.freefair.lombok" version "8.3"
+    id "io.qameta.allure" version "2.11.2"
+    id "com.adarshr.test-logger" version "3.2.0"
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+def allureVersion = "2.24.0"
+def junitVersion = "5.10.0"
+def jacksonVersion = "2.15.2"
+def apacheCommonsLang3Version = "3.13.0"
+def apacheCommonsCollections4Version = "4.4"
+def apacheHttpclient5Version = "5.2.1"
+def kafkaVersion = "3.5.1"
+def restAssuredVersion = '5.3.0'
+def springKafkaVersion = "2.9.0"
+def slf4jVersion = "2.0.9"
+def log4j2Version = "2.20.0"
+
+dependencies {
+    testImplementation("io.qameta.allure:allure-junit-platform:$allureVersion")
+    testImplementation("io.qameta.allure:allure-selenide:$allureVersion")
+
+    testImplementation(platform("org.junit:junit-bom:$junitVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    testImplementation("org.apache.commons:commons-lang3:$apacheCommonsLang3Version")
+    testImplementation("org.apache.commons:commons-collections4:$apacheCommonsCollections4Version")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:$apacheHttpclient5Version")
+    testImplementation("org.apache.kafka:kafka_2.13:$kafkaVersion")
+    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
+    testImplementation("org.springframework.kafka:spring-kafka:$springKafkaVersion")
+    testImplementation("org.slf4j:slf4j-simple:$slf4jVersion")
+    testImplementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    testImplementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+
+
+    testImplementation files("lib/ojdbc6.jar")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('testReadOnly', Test) {
+    onlyIf { !Boolean.getBoolean("skip.tests") }
+    useJUnitPlatform {
+        includeTags "readonly"
+    }
+}
